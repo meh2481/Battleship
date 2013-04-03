@@ -1,5 +1,6 @@
-game:text based adventure/rpg
-tool:midterm generator
-tool:unix class helper
-game:tetris?
-
+game: text based adventure/rpg
+tool: midterm generator
+tool: unix class helper
+game: tetris
+game: battleship
+tool: web crawler for news/weather
