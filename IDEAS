@@ -4,3 +4,4 @@ tool: unix class helper
 game: Tetris
 game: Battleship
 tool: web crawler for news/weather
+game: random math equation generator
