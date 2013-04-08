@@ -1,2 +1,2 @@
-game: Battleship
-game: breakout
+game: Battleship: a console based version of the classic battleship game
+game: breakout: console based version of breakout
