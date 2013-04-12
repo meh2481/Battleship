@@ -1,0 +1,5 @@
+title: Battleship
+contributors: benny mark +lfm
+type: game
+repo: ece2524.ece.vt.edu:mark/project.git
+description: a graphical version of the classic board game Battleship
