@@ -1,4 +1,5 @@
 #include "Image.h"
+#include "Board.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,8 +7,12 @@
 #define WIDTH  640
 #define HEIGHT 640
 
-Image ship_edge;
-Image bg;
+Image* ship_edge;
+Image* ship_center;
+Image* bg;
+int cursorX, cursorY;
+Board gameBoards[2];
+bool bShowShips;
 
 //Set up SDL window
 static void setup_sdl() 
@@ -78,9 +83,10 @@ static void repaint()
 	// Clear the color plane and the z-buffer 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-  bg.draw(0,0);
-  ship_edge.draw(64, 64);
-  ship_edge.draw(128, 128);
+  bg->draw(0,0);
+  //ship_edge->draw(64,64);
+  gameBoards[0].draw(bShowShips);
+  ship_center->draw(cursorX / 64 * 64, cursorY / 64 * 64);
 
   // swap the back and front buffers 
   SDL_GL_SwapBuffers();
@@ -104,12 +110,31 @@ static void main_loop()
           	case SDLK_ESCAPE:
             	exit(0);
               break;
+              
+            case SDLK_p:
+            	bShowShips = !bShowShips;
+            	break;
+            	
+            case SDLK_n:
+            	gameBoards[0].reset();
+            	gameBoards[0].randShipPlacement();
+            	break;
              
             default:
               //no default key processing
               break;
           }
           break;
+        
+        case SDL_MOUSEMOTION:
+        	cursorX = event.motion.x;
+        	cursorY = event.motion.y;
+        	break;
+        	
+        case SDL_MOUSEBUTTONDOWN:
+        	if(event.button.button == SDL_BUTTON_LEFT)
+        		gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT);
+        	break;
 
         case SDL_QUIT:
           exit (0);
@@ -121,20 +146,28 @@ static void main_loop()
     repaint();
 
     // Run at about 60 fps
-    SDL_Delay( 16 );	//Wait 16ms until next loop, for ~60fps framerate
+    SDL_Delay(16);	//Wait 16ms until next loop, for ~60fps framerate
   }
 }
 
 //Our main program
 int main(int argc, char** argv)
 {
+	bShowShips = false;
+
+	//Seed the random number generator
+	srand(time(NULL));
+
 	//Set up our viewport
   setup_sdl();
   setup_opengl();
     
 	//Load textures
- 	ship_edge.load("res/ship_edge.png");
- 	bg.load("res/board.png");
+ 	ship_edge = new Image("res/ship_edge.png");
+ 	ship_center = new Image("res/ship_center.png");
+ 	bg = new Image("res/board.png");
+ 	gameBoards[0].setShipImages(ship_edge, ship_center);
+ 	gameBoards[0].randShipPlacement();	//Start board
     
   //Start the main loop
   main_loop();

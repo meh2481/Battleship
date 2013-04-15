@@ -2,8 +2,12 @@
 
 Image::Image()
 {
-	texture = 0;
-	texW = texH = 0;
+	texture = texW = texH = 0;
+}
+
+Image::Image(string sFilename)
+{
+	load(sFilename);
 }
 
 Image::~Image()
@@ -13,6 +17,7 @@ Image::~Image()
 
 void Image::load(string sFilename)
 {
+	texture = texW = texH = 0;
 	SDL_Surface *surface;
   int mode;
 

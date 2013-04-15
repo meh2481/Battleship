@@ -18,6 +18,7 @@ protected:
 	
 public:
 	Image();
+	Image(string sFilename);
 	~Image();
 
 	void load(string sFilename);
