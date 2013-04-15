@@ -1,2 +1,4 @@
 game: Text Adventure: A console-based humorous text adventure
 game: Tetris: an SDL-based implementation of the classic game
+game: Battleship: a console based version of the classic battleship game
+game: breakout: console based version of breakout
