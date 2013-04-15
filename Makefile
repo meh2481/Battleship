@@ -1,6 +1,6 @@
 #Slightly altered version of in-class example
 
-objects := main.o 
+objects := main.o Image.o
 libs := -lSDL -lSDLmain -lGLU -lSDL_image -lGL
 
 all: battleship
