@@ -10,6 +10,7 @@
 #define TILE_HEIGHT		64
 
 #define NUM_SHIPS			5
+#define NUM_PC_SHIPS			5
 
 #define DIR_UP				0
 #define DIR_RIGHT			1
@@ -38,7 +39,10 @@ class BoardSlot
 public:
 	bool bShip;
 	bool bGuessed;
+	bool AIShip;
+	bool AIGuessed;
 	Ship* pShip;
+	Ship* aShip;
 };
 
 
@@ -50,8 +54,10 @@ protected:
 	short AIGuessDir;
 	short AIGuessLevel;
 	short numShipsSunk;
+	short numPCSunk;
 	int numGuesses;
 	Ship* pShips[NUM_SHIPS];
+	Ship* aShips[NUM_PC_SHIPS];
 	Image* imgShipEdge, *imgShipCenter;
 	
 	//Helper functions
@@ -72,6 +78,8 @@ public:
 	void setAIGuessLevel(short level)	{AIGuessLevel = level;};
 	short getAIGuessLevel()						{return AIGuessLevel;};
 	void setShipImages(Image* edge, Image* center)	{imgShipEdge = edge; imgShipCenter = center;};
+
+	void findSpot(BoardSlot board[BOARD_WIDTH][BOARD_HEIGHT]);
 
 };
 

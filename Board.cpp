@@ -12,15 +12,16 @@ Board::Board()
   	pShips[i]->rotation = NO_DIR;
   	pShips[i]->len = SHIP_SIZES[i];
   	pShips[i]->name = SHIP_NAMES[i];
-	}
-	reset();
+  }
+  
+  reset();
 }
 
 Board::~Board()
 {
 	for(int i = 0; i < NUM_SHIPS; i++)
-  {
-  	delete pShips[i];
+  	{
+  		delete pShips[i];
 	}
 }
 
@@ -128,8 +129,71 @@ void Board::playerGuess(int guessX, int guessY)
 	}
 }
 
-void Board::AIGuess()
+void Board::AIGuess(short AIGuessLevel)
 {
+	if(AIGuessLevel == 1)
+	{
+		int row = rand % 10;
+		int col = rand % 10;
+
+		if(board[row][col].AIGuessed)
+			return;
+
+		board[row][col].AIGuessed = true;
+		
+		if(board[row][col].AIShip)
+		{
+			if(board[row][col].aShip != NULL)
+			{
+				if(++board[row][col].aShip->hits == board[row][col].aShip->len)
+				{
+					cout << "Computer sunk " << board[row][col].aShip->name << endl;
+					
+					if(++numPCSunk == NUM_PC_SHIPS)
+					{
+						cout << "Game Over" << endl << "Computer won" << endl;
+						reset();
+					}
+				}
+			}
+		}
+	}
+
+	else if(AIGuessLevel == 2)
+	{
+
+	}
+}
+
+void findSpot(BoardSlot board[BOARD_WIDTH][BOARD_HEIGHT])
+{
+	int hitCount[20];
+	int h = 0;
+	int max = -1;
+	
+	for(int i = 0; i < 10; i++)
+	{
+		for(int j = 0; j < 10; j++)
+		{
+			if(board[BOARD_WIDTH][BOARD_HEIGHT] == true)
+			{
+				hitCount[h] = hitCount[h] + 1;
+				hitCount[j+10] = hitCount[j+10] + 1;
+			}
+		}
+		
+		h++;
+	}
+
+	for(int k = 1; k < 20; k++)
+	{
+		if(hitCount[k] > hitCount[k-1])
+		{
+			max = k;
+		}
+	}
+
+	
 	
 }
 	
