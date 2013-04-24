@@ -131,43 +131,51 @@ void Board::playerGuess(int guessX, int guessY)
 
 void Board::AIGuess(short AIGuessLevel)
 {
-	if(AIGuessLevel == 1)
+	if(AIGuessLevel == UNINTELLIGENT_GUESS)
 	{
-		int row = rand % 10;
-		int col = rand % 10;
+		int row = rand() % BOARD_WIDTH;
+		int col = rand() % BOARD_HEIGHT;
 
-		if(board[row][col].AIGuessed)
-			return;
-
-		board[row][col].AIGuessed = true;
-		
-		if(board[row][col].AIShip)
+		while(board[row][col].bGuessed)	//While loop here so AI doesn't "give up" if it guesses the same spot twice
 		{
-			if(board[row][col].aShip != NULL)
+			row = rand() % BOARD_WIDTH;
+			col = rand() % BOARD_HEIGHT;
+		}
+		
+		numGuesses++;	//AI has # guesses count too
+
+		board[row][col].bGuessed = true;
+		
+		if(board[row][col].bShip)
+		{
+			if(board[row][col].pShip != NULL)
 			{
-				if(++board[row][col].aShip->hits == board[row][col].aShip->len)
+				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
 				{
-					cout << "Computer sunk " << board[row][col].aShip->name << endl;
+					cout << "Computer sunk " << board[row][col].pShip->name << endl;
 					
-					if(++numPCSunk == NUM_PC_SHIPS)
+					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
 					{
-						cout << "Game Over" << endl << "Computer won" << endl;
+						cout << "Game Over." << endl << "Computer won with " << numGuesses << " guesses." << endl;
 						reset();
+						randShipPlacement();
 					}
 				}
 			}
 		}
 	}
 
-	else if(AIGuessLevel == 2)
+	else if(AIGuessLevel == INTELLIGENT_GUESS)
 	{
 
 	}
 }
 
-void findSpot(BoardSlot board[BOARD_WIDTH][BOARD_HEIGHT])
+void Board::findSpot()
 {
-	int hitCount[20];
+	//Doesn't compile. Not sure what we're doing here
+
+	/*int hitCount[20];
 	int h = 0;
 	int max = -1;
 	
@@ -191,7 +199,7 @@ void findSpot(BoardSlot board[BOARD_WIDTH][BOARD_HEIGHT])
 		{
 			max = k;
 		}
-	}
+	}*/
 
 	
 	

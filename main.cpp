@@ -127,13 +127,14 @@ static void main_loop()
           break;
         
         case SDL_MOUSEMOTION:
-        	cursorX = event.motion.x;
-        	cursorY = event.motion.y;
+        	//cursorX = event.motion.x;
+        	//cursorY = event.motion.y;
         	break;
         	
         case SDL_MOUSEBUTTONDOWN:
-        	if(event.button.button == SDL_BUTTON_LEFT)
-        		gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT);
+        	gameBoards[0].AIGuess(UNINTELLIGENT_GUESS);
+        	//if(event.button.button == SDL_BUTTON_LEFT)
+        	//	gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT);
         	break;
 
         case SDL_QUIT:
