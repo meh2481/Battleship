@@ -213,9 +213,18 @@ void Board::draw(bool bDrawShips)
 		for(int j = 0; j < BOARD_HEIGHT; j++)
 		{
 			if(board[i][j].bShip && (bDrawShips || board[i][j].bGuessed))	//If we're supposed to draw ship outlines, or if they've guessed there
+			{
+				imgShipEdge->setColor(0.0,0.0,0.0);
 				imgShipEdge->draw(i * TILE_WIDTH, j * TILE_HEIGHT);
+			}
 			if(board[i][j].bGuessed)						//And draw the guesses
+			{
+				if(board[i][j].bShip)
+					imgShipCenter->setColor(1.0,0.0,0.0);
+				else
+					imgShipCenter->setColor(1.0,1.0,1.0);
 				imgShipCenter->draw(i * TILE_WIDTH, j * TILE_HEIGHT);
+			}
 		}
 	}
 }
