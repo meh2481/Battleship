@@ -131,11 +131,11 @@ void Board::playerGuess(int guessX, int guessY)
 
 void Board::AIGuess(short AIGuessLevel)
 {
+	int row;
+	int col;
+
 	if(AIGuessLevel == UNINTELLIGENT_GUESS)
 	{
-		int row = rand() % BOARD_WIDTH;
-		int col = rand() % BOARD_HEIGHT;
-
 		while(board[row][col].bGuessed)	//While loop here so AI doesn't "give up" if it guesses the same spot twice
 		{
 			row = rand() % BOARD_WIDTH;
@@ -167,42 +167,71 @@ void Board::AIGuess(short AIGuessLevel)
 
 	else if(AIGuessLevel == INTELLIGENT_GUESS)
 	{
+		int spot[2];
+		findSpot(spot);
+		row = spot[0];
+		col = spot[1];
+		numGuesses++;
 
+		if(board[row][col].bShip)
+		{
+			if(board[row][col].pShip != NULL)
+			{
+				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
+				{
+					cout << "Computer sunk " << board[row][col].pShip->name << endl;
+					
+					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
+					{
+						cout << "Game Over." << endl << "Computer won with " << numGuesses << " guesses." << endl;
+						reset();
+						randShipPlacement();
+					}
+				}
+			}
+		}
 	}
 }
 
-void Board::findSpot()
+void Board::findSpot(int spot[2])
 {
-	//Doesn't compile. Not sure what we're doing here
-
-	/*int hitCount[20];
-	int h = 0;
-	int max = -1;
-	
 	for(int i = 0; i < 10; i++)
 	{
 		for(int j = 0; j < 10; j++)
 		{
-			if(board[BOARD_WIDTH][BOARD_HEIGHT] == true)
+			if(board[i][j] == true)
 			{
-				hitCount[h] = hitCount[h] + 1;
-				hitCount[j+10] = hitCount[j+10] + 1;
+				if(board[i-1][j] == false)
+				{
+					board[i-1][j] == true;
+					spot[0] = i-1;
+					spot[1] = j;
+					break;
+				}
+				else if(board[i+1][j] == false)
+				{
+					board[i+1][j] == true;
+					spot[0] = i+1;
+					spot[1] = j;
+					break;
+				}
+				else if(board[i][j-1] == false)
+				{
+					board[i][j-1] == true;
+					spot[0] = i;
+					spot[1] = j-1;
+					break;
+				}
+				else if(board[i][j+1] == false)
+				{
+					board[i][j+1] == true;
+					spot[0] = i;
+					spot[1] = j+1;
+					break;
+				}
 			}
 		}
-		
-		h++;
 	}
-
-	for(int k = 1; k < 20; k++)
-	{
-		if(hitCount[k] > hitCount[k-1])
-		{
-			max = k;
-		}
-	}*/
-
-	
-	
 }
 	
 void Board::draw(bool bDrawShips)
