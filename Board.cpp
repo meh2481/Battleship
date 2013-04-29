@@ -11,9 +11,9 @@ Board::Board()
   	pShips[i]->Xpos = pShips[i]->Ypos = -1;
   	pShips[i]->rotation = NO_DIR;
   	pShips[i]->len = SHIP_SIZES[i];
-  	pShips[i]->name = SHIP_NAMES[i];
+  	pShips[i]->num = i;
   }
-  
+  AIGuessLevel = UNINTELLIGENT_GUESS;
   reset();
 }
 
@@ -122,10 +122,12 @@ void Board::randShipPlacement()
 	}
 }
 	
-bool Board::playerGuess(int guessX, int guessY)
+short Board::playerGuess(int guessX, int guessY)
 {
+	short retVal = SHIP_MISS;
+
 	if(board[guessX][guessY].bGuessed)	//Can't guess the same spot twice
-		return false;
+		return CANT_GUESS;
 		
 	numGuesses++;
 	
@@ -133,27 +135,30 @@ bool Board::playerGuess(int guessX, int guessY)
 	if(board[guessX][guessY].bShip)
 	{
 		//TODO Some kind of cue for hitting ship
+		retVal = SHIP_HIT;
 		if(board[guessX][guessY].pShip != NULL)
 		{
 			if(++board[guessX][guessY].pShip->hits == board[guessX][guessY].pShip->len)
 			{
 				//TODO Some kind of cue for sinking ship
-				cout << "Player sunk " << board[guessX][guessY].pShip->name << endl;
+				retVal = board[guessX][guessY].pShip->num;
+				cout << "Player sunk " << SHIP_NAMES[board[guessX][guessY].pShip->num] << endl;
 				if(++numShipsSunk == NUM_SHIPS)
 				{
 					//TODO Some kind of game over state or somewhat
 					cout << "Player won with " << numGuesses << " guesses." << endl;
-					//reset();
-					//randShipPlacement();
+					retVal = SHIP_WON;
 				}	
 			}	
 		}
 	}
-	return true;
+	return retVal;
 }
 
-bool Board::AIGuess(short AIGuessLevel)
+short Board::AIGuess()
 {
+	short retVal = SHIP_MISS;
+	
 	if(AIGuessLevel == UNINTELLIGENT_GUESS)
 	{
 		int row, col;
@@ -170,17 +175,18 @@ bool Board::AIGuess(short AIGuessLevel)
 		
 		if(board[row][col].bShip)
 		{
+			retVal = SHIP_HIT;
 			if(board[row][col].pShip != NULL)
 			{
 				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
 				{
-					cout << "Computer sunk " << board[row][col].pShip->name << endl;
+					retVal = board[row][col].pShip->num;
+					cout << "Computer sunk " << SHIP_NAMES[board[row][col].pShip->num] << endl;
 					
 					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
 					{
+						retVal = SHIP_WON;
 						cout << "Game Over." << endl << "Computer won with " << numGuesses << " guesses." << endl;
-						//reset();
-						//randShipPlacement();
 					}
 				}
 			}
@@ -191,7 +197,7 @@ bool Board::AIGuess(short AIGuessLevel)
 	{
 
 	}
-	return true;
+	return retVal;
 }
 
 void Board::findSpot()

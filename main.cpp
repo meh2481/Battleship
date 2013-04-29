@@ -16,7 +16,8 @@
 Image* ship_edge;
 Image* ship_center;
 Image* bg;
-int cursorX, cursorY;
+Image* gameover;
+int cursorX=0, cursorY=0;
 Board gameBoards[2];
 bool bShowShips;
 char cState = STATE_PLAYER_PLACESHIPS;
@@ -45,11 +46,19 @@ static void setup_sdl()
   }
 
   // Set the minimum requirements for the OpenGL window
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  
+  //Set icon for window
+  SDL_Surface *image;
+	image = IMG_Load("res/icon.png");
+  SDL_WM_SetCaption("Battleship", NULL);
+	SDL_WM_SetIcon(image, NULL);
+	SDL_FreeSurface(image);
 
   // Create SDL window
   if(SDL_SetVideoMode(WIDTH, HEIGHT, video->vfmt->BitsPerPixel, SDL_OPENGL) == 0) 
@@ -94,9 +103,9 @@ static void repaint()
   bg->draw(0,0);
   if(cState == STATE_PLAYER_GUESS)
   {
-  	gameBoards[0].draw(bShowShips);
   	ship_center->setColor(1.0,1.0,1.0);
   	ship_center->draw(cursorX / 64 * 64, cursorY / 64 * 64);
+  	gameBoards[0].draw(bShowShips);
   }
   else if(cState == STATE_AI_GUESS)
   {
@@ -119,6 +128,11 @@ static void repaint()
 				for(int i = x; i - x < iLen; i++)
 					ship_edge->draw(i * TILE_WIDTH, y * TILE_HEIGHT);
 		}
+	}
+	else if(cState == STATE_GAMEOVER)
+	{
+		//Center "Game Over" text on the screen
+		gameover->draw((WIDTH - gameover->getWidth()) / 2.0, (HEIGHT - gameover->getHeight()) / 2.0);
 	}
 
   // swap the back and front buffers 
@@ -143,13 +157,16 @@ static void main_loop()
   				if(!bAIGuessed)
   				{
   					bAIGuessed = true;
-  					gameBoards[1].AIGuess(UNINTELLIGENT_GUESS);
+  					short guessCode = gameBoards[1].AIGuess();
+  					if(guessCode == SHIP_WON)
+  					{
+  						cState = STATE_GAMEOVER;
+  						break;
+  					}
 						bDelay = true;
 					}
 					else
-					{
 						cState = STATE_PLAYER_GUESS;
-					}
 					break;
 				case STATE_PLAYER_GUESS:
 					cState = STATE_AI_GUESS;
@@ -199,14 +216,20 @@ static void main_loop()
         	if(cState == STATE_GAMEOVER)
         	{
         		cState = STATE_PLAYER_PLACESHIPS;
+        		gameBoards[0].reset();
+        		gameBoards[1].reset();
+  					cursorX = cursorY = 0;
         	}
         	else if(cState == STATE_PLAYER_GUESS)
         	{
         		if(event.button.button == SDL_BUTTON_LEFT)
-        			if(gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT))
-        			{
+        		{
+        			short guessCode = gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT);
+        			if(guessCode == SHIP_WON)
+        				cState = STATE_GAMEOVER;
+        			else if(guessCode != CANT_GUESS)
         				bDelay = true;
-        			}
+        		}
 					}
         	else if(cState == STATE_PLAYER_PLACESHIPS)
         	{
@@ -269,6 +292,7 @@ int main(int argc, char** argv)
  	ship_edge = new Image("res/ship_edge.png");
  	ship_center = new Image("res/ship_center.png");
  	bg = new Image("res/board.png");
+ 	gameover = new Image("res/gameover.png");
  	gameBoards[0].setShipImages(ship_edge, ship_center);
  	gameBoards[1].setShipImages(ship_edge, ship_center);
     
