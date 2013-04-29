@@ -53,6 +53,7 @@ protected:
 	int numGuesses;
 	Ship* pShips[NUM_SHIPS];
 	Image* imgShipEdge, *imgShipCenter;
+	int curShipPlace;
 	
 	//Helper functions
 	bool placeShip(Ship* s);
@@ -64,16 +65,19 @@ public:
 	void reset();
 	void randShipPlacement();
 	
-	void playerGuess(int guessX, int guessY);
-	void AIGuess(short AIGuessLevel = UNINTELLIGENT_GUESS);
+	bool playerGuess(int guessX, int guessY);
+	bool AIGuess(short AIGuessLevel = UNINTELLIGENT_GUESS);
 	
 	void draw(bool bDrawShips = false);
+	void drawShips();
 	
-	void setAIGuessLevel(short level)	{AIGuessLevel = level;};
+	void 	setAIGuessLevel(short level)	{AIGuessLevel = level;};
 	short getAIGuessLevel()						{return AIGuessLevel;};
-	void setShipImages(Image* edge, Image* center)	{imgShipEdge = edge; imgShipCenter = center;};
+	void 	setShipImages(Image* edge, Image* center)	{imgShipEdge = edge; imgShipCenter = center;};
 
-	void findSpot();
+	void 	findSpot();
+	int 	curShipLen();
+	bool 	placeShip(int i, int j, short rotation);
 
 };
 

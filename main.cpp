@@ -7,12 +7,20 @@
 #define WIDTH  640
 #define HEIGHT 640
 
+#define STATE_PLAYER_PLACESHIPS		0
+#define STATE_PLAYER2_PLACESHIPS	1
+#define STATE_PLAYER_GUESS				2
+#define STATE_AI_GUESS						3
+#define STATE_GAMEOVER						4
+
 Image* ship_edge;
 Image* ship_center;
 Image* bg;
 int cursorX, cursorY;
 Board gameBoards[2];
 bool bShowShips;
+char cState = STATE_PLAYER_PLACESHIPS;
+short g_rot;
 
 //Set up SDL window
 static void setup_sdl() 
@@ -84,9 +92,34 @@ static void repaint()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
   bg->draw(0,0);
-  //ship_edge->draw(64,64);
-  gameBoards[0].draw(bShowShips);
-  ship_center->draw(cursorX / 64 * 64, cursorY / 64 * 64);
+  if(cState == STATE_PLAYER_GUESS)
+  {
+  	gameBoards[0].draw(bShowShips);
+  	ship_center->setColor(1.0,1.0,1.0);
+  	ship_center->draw(cursorX / 64 * 64, cursorY / 64 * 64);
+  }
+  else if(cState == STATE_AI_GUESS)
+  {
+  	gameBoards[1].draw(true);
+	}
+	else if(cState == STATE_PLAYER_PLACESHIPS)
+	{
+		gameBoards[1].drawShips();
+		int iLen = gameBoards[1].curShipLen();
+		if(iLen != -1)
+		{
+			ship_edge->setColor(1.0,1.0,1.0);
+			int x = cursorX / TILE_WIDTH;
+			int y = cursorY / TILE_HEIGHT;
+			ship_edge->draw(x * TILE_WIDTH, y * TILE_HEIGHT);
+			if(g_rot == DIR_DOWN)
+				for(int i = y; i - y < iLen; i++)
+					ship_edge->draw(x * TILE_WIDTH, i * TILE_HEIGHT);
+			else if(g_rot == DIR_RIGHT)
+				for(int i = x; i - x < iLen; i++)
+					ship_edge->draw(i * TILE_WIDTH, y * TILE_HEIGHT);
+		}
+	}
 
   // swap the back and front buffers 
   SDL_GL_SwapBuffers();
@@ -96,9 +129,36 @@ static void repaint()
 static void main_loop() 
 {
 	SDL_Event event;
+	bool bDelay = false;
+	bool bAIGuessed = false;
 
   while(true)
   {
+  	if(bDelay)
+  	{
+  		bDelay = false;
+  		switch(cState)
+  		{
+  			case STATE_AI_GUESS:
+  				if(!bAIGuessed)
+  				{
+  					bAIGuessed = true;
+  					gameBoards[1].AIGuess(UNINTELLIGENT_GUESS);
+						bDelay = true;
+					}
+					else
+					{
+						cState = STATE_PLAYER_GUESS;
+					}
+					break;
+				case STATE_PLAYER_GUESS:
+					cState = STATE_AI_GUESS;
+					bAIGuessed = false;
+					bDelay = true;
+					break;
+			}
+  	}
+  	
   	// process pending events 
     while(SDL_PollEvent(&event)) 
     {
@@ -127,14 +187,46 @@ static void main_loop()
           break;
         
         case SDL_MOUSEMOTION:
-        	//cursorX = event.motion.x;
-        	//cursorY = event.motion.y;
+        	if(cState == STATE_PLAYER_GUESS ||
+        		 cState == STATE_PLAYER_PLACESHIPS)
+        	{
+        		cursorX = event.motion.x;
+        		cursorY = event.motion.y;
+        	}
         	break;
         	
         case SDL_MOUSEBUTTONDOWN:
-        	gameBoards[0].AIGuess(UNINTELLIGENT_GUESS);
-        	//if(event.button.button == SDL_BUTTON_LEFT)
-        	//	gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT);
+        	if(cState == STATE_GAMEOVER)
+        	{
+        		cState = STATE_PLAYER_PLACESHIPS;
+        	}
+        	else if(cState == STATE_PLAYER_GUESS)
+        	{
+        		if(event.button.button == SDL_BUTTON_LEFT)
+        			if(gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT))
+        			{
+        				bDelay = true;
+        			}
+					}
+        	else if(cState == STATE_PLAYER_PLACESHIPS)
+        	{
+        		if(event.button.button == SDL_BUTTON_LEFT)	//Left mouse button = place ship
+        		{
+        			gameBoards[1].placeShip(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT, g_rot);
+        			if(gameBoards[1].curShipLen() == -1)	//Placed last ship
+        			{
+        				gameBoards[0].randShipPlacement();	//Place enemy ships
+        				cState = STATE_PLAYER_GUESS;
+        			}
+        		}
+        		else	//Right mouse button = rotate ship
+        		{
+        			if(g_rot == DIR_DOWN)
+        				g_rot = DIR_RIGHT;
+        			else
+        				g_rot = DIR_DOWN;
+						}
+					}
         	break;
 
         case SDL_QUIT:
@@ -143,11 +235,20 @@ static void main_loop()
       }
     }
     
-    // update the screen  
+		// update the screen  
     repaint();
+    
+   	//if(cState == STATE_AI_GUESS)
+    //{
+    	//Delay longer for AI guess so player can see where they're guessing
+    //	bDelay = true;
+		//}
 
     // Run at about 60 fps
     SDL_Delay(16);	//Wait 16ms until next loop, for ~60fps framerate
+		
+		if(bDelay)
+			SDL_Delay(500);
   }
 }
 
@@ -155,6 +256,7 @@ static void main_loop()
 int main(int argc, char** argv)
 {
 	bShowShips = false;
+	g_rot = DIR_DOWN;
 
 	//Seed the random number generator
 	srand(time(NULL));
@@ -168,7 +270,7 @@ int main(int argc, char** argv)
  	ship_center = new Image("res/ship_center.png");
  	bg = new Image("res/board.png");
  	gameBoards[0].setShipImages(ship_edge, ship_center);
- 	gameBoards[0].randShipPlacement();	//Start board
+ 	gameBoards[1].setShipImages(ship_edge, ship_center);
     
   //Start the main loop
   main_loop();

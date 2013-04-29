@@ -20,7 +20,7 @@ Board::Board()
 Board::~Board()
 {
 	for(int i = 0; i < NUM_SHIPS; i++)
-  	{
+  {
   		delete pShips[i];
 	}
 }
@@ -41,16 +41,26 @@ void Board::reset()
 	AILastGuessX = AILastGuessY = AIGuessDir = NO_DIR;
 	numShipsSunk = 0;
 	numGuesses = 0;
+	curShipPlace = 0;
+}
+
+bool Board::placeShip(int i, int j, short rotation)
+{
+	Ship* s = pShips[curShipPlace];
+	s->rotation = rotation;
+	s->Xpos = i;
+	s->Ypos = j;
+	return placeShip(s);
 }
 
 bool Board::placeShip(Ship* s)
 {	
 	if(s->rotation == DIR_RIGHT)	//Place ship horizontally
 	{
-		//Create coordinate to place at
-		s->Xpos = rand() % (BOARD_WIDTH - s->len + 1);
-		s->Ypos = rand() % (BOARD_HEIGHT);
-		
+		//Test and make sure isn't off edge of map
+		if(s->Xpos + s->len > BOARD_WIDTH)
+			return false;
+	
 		//Test and make sure this doesn't overlap any other ships
 		for(int i = s->Xpos; i < s->Xpos + s->len; i++)
 		{
@@ -68,10 +78,10 @@ bool Board::placeShip(Ship* s)
 	}
 	else	//Place ship vertically
 	{
-		//Create coordinate to place at
-		s->Xpos = rand() % (BOARD_WIDTH);
-		s->Ypos = rand() % (BOARD_HEIGHT - s->len + 1);
-		
+		//Test and make sure isn't off edge of map
+		if(s->Ypos + s->len > BOARD_HEIGHT)
+			return false;
+			
 		//Test and make sure this doesn't overlap any other ships
 		for(int i = s->Ypos; i < s->Ypos + s->len; i++)
 		{
@@ -86,6 +96,7 @@ bool Board::placeShip(Ship* s)
 			board[s->Xpos][i].pShip = s;
 		}
 	}
+	curShipPlace++;
 	return true;
 }
 
@@ -93,17 +104,28 @@ void Board::randShipPlacement()
 {
 	for(int i = 0; i < NUM_SHIPS; i++)
 	{
-		pShips[i]->rotation = DIR_RIGHT;
-		if(rand() % 2 == 0)
-			pShips[i]->rotation = DIR_DOWN;
+		do	//Oh, look, a do-while loop has a use. Wonders never cease.
+		{
+			//Create coordinate to place at
+			pShips[i]->rotation = DIR_RIGHT;
+			pShips[i]->Xpos = rand() % (BOARD_WIDTH - pShips[i]->len + 1);
+			pShips[i]->Ypos = rand() % (BOARD_HEIGHT);
+			
+			if(rand() % 2 == 0)
+			{
+				pShips[i]->rotation = DIR_DOWN;
+				pShips[i]->Xpos = rand() % (BOARD_WIDTH);
+				pShips[i]->Ypos = rand() % (BOARD_HEIGHT - pShips[i]->len + 1);
+			}
+		}
 		while(!placeShip(pShips[i]));	//Place ship until we don't hit another (could theoretically hang here; oh, well)
 	}
 }
 	
-void Board::playerGuess(int guessX, int guessY)
+bool Board::playerGuess(int guessX, int guessY)
 {
 	if(board[guessX][guessY].bGuessed)	//Can't guess the same spot twice
-		return;
+		return false;
 		
 	numGuesses++;
 	
@@ -121,26 +143,26 @@ void Board::playerGuess(int guessX, int guessY)
 				{
 					//TODO Some kind of game over state or somewhat
 					cout << "Player won with " << numGuesses << " guesses." << endl;
-					reset();
-					randShipPlacement();
+					//reset();
+					//randShipPlacement();
 				}	
 			}	
 		}
 	}
+	return true;
 }
 
-void Board::AIGuess(short AIGuessLevel)
+bool Board::AIGuess(short AIGuessLevel)
 {
 	if(AIGuessLevel == UNINTELLIGENT_GUESS)
 	{
-		int row = rand() % BOARD_WIDTH;
-		int col = rand() % BOARD_HEIGHT;
-
-		while(board[row][col].bGuessed)	//While loop here so AI doesn't "give up" if it guesses the same spot twice
+		int row, col;
+		do	//Does it say something bad about my programming style if I use more than one do-while loop in a program? Hmm...
 		{
 			row = rand() % BOARD_WIDTH;
 			col = rand() % BOARD_HEIGHT;
 		}
+		while(board[row][col].bGuessed);	//While loop here so AI doesn't "give up" if it guesses the same spot twice
 		
 		numGuesses++;	//AI has # guesses count too
 
@@ -157,8 +179,8 @@ void Board::AIGuess(short AIGuessLevel)
 					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
 					{
 						cout << "Game Over." << endl << "Computer won with " << numGuesses << " guesses." << endl;
-						reset();
-						randShipPlacement();
+						//reset();
+						//randShipPlacement();
 					}
 				}
 			}
@@ -169,6 +191,7 @@ void Board::AIGuess(short AIGuessLevel)
 	{
 
 	}
+	return true;
 }
 
 void Board::findSpot()
@@ -204,6 +227,13 @@ void Board::findSpot()
 	
 	
 }
+
+int Board::curShipLen()
+{
+	if(curShipPlace < NUM_SHIPS)
+		return SHIP_SIZES[curShipPlace];
+	return -1;
+}
 	
 void Board::draw(bool bDrawShips)
 {
@@ -224,6 +254,21 @@ void Board::draw(bool bDrawShips)
 				else
 					imgShipCenter->setColor(1.0,1.0,1.0);
 				imgShipCenter->draw(i * TILE_WIDTH, j * TILE_HEIGHT);
+			}
+		}
+	}
+}
+
+void Board::drawShips()	//Separate from above because of ship placement
+{
+	for(int i = 0; i < BOARD_WIDTH; i++)
+	{
+		for(int j = 0; j < BOARD_HEIGHT; j++)
+		{
+			if(board[i][j].bShip)
+			{
+				imgShipEdge->setColor(0.0,0.0,0.0);
+				imgShipEdge->draw(i * TILE_WIDTH, j * TILE_HEIGHT);
 			}
 		}
 	}
