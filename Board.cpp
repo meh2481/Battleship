@@ -168,10 +168,16 @@ void Board::AIGuess(short AIGuessLevel)
 	else if(AIGuessLevel == INTELLIGENT_GUESS)
 	{
 		int spot[2];
-		findSpot(spot);
-		row = spot[0];
-		col = spot[1];
+
+		while(board[row][col].bGuessed)
+		{
+			findSpot(spot);
+			row = spot[0];
+			col = spot[1];
+		}
 		numGuesses++;
+
+		board[row][col].bGuessed = true;
 
 		if(board[row][col].bShip)
 		{
