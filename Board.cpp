@@ -205,32 +205,32 @@ void Board::findSpot(int spot[2])
 	{
 		for(int j = 0; j < 10; j++)
 		{
-			if(board[i][j] == true)
+			if(board[i][j].bGuessed == true)
 			{
-				if(board[i-1][j] == false)
+				if(board[i-1][j].bGuessed == false)
 				{
-					board[i-1][j] == true;
+					board[i-1][j].bGuessed = true;
 					spot[0] = i-1;
 					spot[1] = j;
 					break;
 				}
-				else if(board[i+1][j] == false)
+				else if(board[i+1][j].bGuessed == false)
 				{
-					board[i+1][j] == true;
+					board[i+1][j].bGuessed = true;
 					spot[0] = i+1;
 					spot[1] = j;
 					break;
 				}
-				else if(board[i][j-1] == false)
+				else if(board[i][j-1].bGuessed == false)
 				{
-					board[i][j-1] == true;
+					board[i][j-1] = true;
 					spot[0] = i;
 					spot[1] = j-1;
 					break;
 				}
-				else if(board[i][j+1] == false)
+				else if(board[i][j+1].bGuessed == false)
 				{
-					board[i][j+1] == true;
+					board[i][j+1] = true;
 					spot[0] = i;
 					spot[1] = j+1;
 					break;
