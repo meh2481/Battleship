@@ -196,6 +196,7 @@ short Board::AIGuess()
 	else if(AIGuessLevel == INTELLIGENT_GUESS)
 	{
 		int spot[2];
+		int row, col;
 
 		while(board[row][col].bGuessed)
 		{
@@ -213,7 +214,7 @@ short Board::AIGuess()
 			{
 				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
 				{
-					cout << "Computer sunk " << board[row][col].pShip->name << endl;
+					cout << "Computer sunk " << SHIP_NAMES[board[row][col].pShip->num] << endl;
 					
 					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
 					{
