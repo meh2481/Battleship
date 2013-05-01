@@ -20,6 +20,11 @@
 #define INTELLIGENT_GUESS		0
 #define UNINTELLIGENT_GUESS	1
 
+#define SHIP_HIT		5
+#define SHIP_MISS		6
+#define	SHIP_WON		7
+#define CANT_GUESS	-1
+
 static const int SHIP_SIZES[NUM_SHIPS] = {5,4,3,3,2};
 static const char* SHIP_NAMES[NUM_SHIPS] = {"Aircraft Carrier","Battleship","Destroyer","Submarine","Patrol Boat"};
 
@@ -29,7 +34,7 @@ public:
 	int Xpos, Ypos;
 	short rotation;
 	short len;
-	string name;
+	short num;
 	short hits;
 };
 
@@ -53,6 +58,7 @@ protected:
 	int numGuesses;
 	Ship* pShips[NUM_SHIPS];
 	Image* imgShipEdge, *imgShipCenter;
+	int curShipPlace;
 	
 	//Helper functions
 	bool placeShip(Ship* s);
@@ -64,16 +70,19 @@ public:
 	void reset();
 	void randShipPlacement();
 	
-	void playerGuess(int guessX, int guessY);
-	void AIGuess(short AIGuessLevel = UNINTELLIGENT_GUESS);
+	short playerGuess(int guessX, int guessY);
+	short AIGuess();
 	
 	void draw(bool bDrawShips = false);
+	void drawShips();
 	
-	void setAIGuessLevel(short level)	{AIGuessLevel = level;};
+	void 	setAIGuessLevel(short level)	{AIGuessLevel = level;};
 	short getAIGuessLevel()						{return AIGuessLevel;};
-	void setShipImages(Image* edge, Image* center)	{imgShipEdge = edge; imgShipCenter = center;};
+	void 	setShipImages(Image* edge, Image* center)	{imgShipEdge = edge; imgShipCenter = center;};
 
 	void findSpot(int spot[2]);
+	int 	curShipLen();
+	bool 	placeShip(int i, int j, short rotation);
 
 };
 
