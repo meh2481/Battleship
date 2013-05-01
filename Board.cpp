@@ -195,7 +195,36 @@ short Board::AIGuess()
 
 	else if(AIGuessLevel == INTELLIGENT_GUESS)
 	{
+		int spot[2];
+		int row, col;
 
+		while(board[row][col].bGuessed)
+		{
+			findSpot(spot);
+			row = spot[0];
+			col = spot[1];
+		}
+		numGuesses++;
+
+		board[row][col].bGuessed = true;
+
+		if(board[row][col].bShip)
+		{
+			if(board[row][col].pShip != NULL)
+			{
+				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
+				{
+					cout << "Computer sunk " << SHIP_NAMES[board[row][col].pShip->num] << endl;
+					
+					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
+					{
+						cout << "Game Over." << endl << "Computer won with " << numGuesses << " guesses." << endl;
+						reset();
+						randShipPlacement();
+					}
+				}
+			}
+		}
 	}
 	return retVal;
 }
@@ -210,28 +239,28 @@ void Board::findSpot(int spot[2])
 			{
 				if(board[i-1][j].bGuessed == false)
 				{
-					board[i-1][j].bGuessed = true;
+					//board[i-1][j].bGuessed = true;
 					spot[0] = i-1;
 					spot[1] = j;
 					break;
 				}
 				else if(board[i+1][j].bGuessed == false)
 				{
-					board[i+1][j].bGuessed = true;
+					//board[i+1][j].bGuessed = true;
 					spot[0] = i+1;
 					spot[1] = j;
 					break;
 				}
 				else if(board[i][j-1].bGuessed == false)
 				{
-					board[i][j-1] = true;
+					//board[i][j-1] = true;
 					spot[0] = i;
 					spot[1] = j-1;
 					break;
 				}
 				else if(board[i][j+1].bGuessed == false)
 				{
-					board[i][j+1] = true;
+					//board[i][j+1] = true;
 					spot[0] = i;
 					spot[1] = j+1;
 					break;
