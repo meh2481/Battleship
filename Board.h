@@ -73,7 +73,7 @@ public:
 	short getAIGuessLevel()						{return AIGuessLevel;};
 	void setShipImages(Image* edge, Image* center)	{imgShipEdge = edge; imgShipCenter = center;};
 
-	void findSpot();
+	void findSpot(int spot[2]);
 
 };
 
