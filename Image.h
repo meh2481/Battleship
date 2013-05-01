@@ -10,11 +10,21 @@
 #include <iostream>
 using namespace std;
 
+class Color
+{
+public:
+	float r,g,b;
+	Color();
+	
+	void from256(int ir, int ig, int ib);
+};
+
 class Image
 {
 protected:
 	int texW, texH;
 	GLuint texture;
+	Color m_col;
 	
 public:
 	Image();
@@ -24,8 +34,13 @@ public:
 	void load(string sFilename);
 	void draw(int x, int y);
 
-	int getWidth() {return texW;};
-	int getHeight() {return texH;};
+	int getWidth() 					{return texW;};
+	int getHeight() 				{return texH;};
+	
+	Color getColor()				{return m_col;};
+	int setColor(Color col)	{m_col = col;};
+	int setColor(float r, float g, float b)	{m_col.r = r; m_col.g = g; m_col.b = b;};
+	int setColorFrom256(int r, int g, int b)	{m_col.from256(r,g,b);};
 };
 
 

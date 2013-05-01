@@ -72,13 +72,13 @@ void Image::draw(int x, int y)
 	if(texture == 0)
 		return;
 	
-	// tell opengl to use the generated texture name
+	// tell opengl to use the generated texture
   glBindTexture(GL_TEXTURE_2D, texture);
   glEnable(GL_TEXTURE_2D);
 
   // make a rectangle
   glBegin(GL_QUADS);
-
+	glColor3f(m_col.r,m_col.g,m_col.b);	//Colorize according to how we've colorized this image
   // top left
   glTexCoord2i(0, 0);
   glVertex3f(x, y, 0);
@@ -99,3 +99,19 @@ void Image::draw(int x, int y)
         
   glDisable(GL_TEXTURE_2D);
 }
+
+Color::Color()
+{
+	r = g = b = 1.0;
+}
+
+void Color::from256(int ir, int ig, int ib)
+{
+	r = (float)ir/255.0;
+	g = (float)ig/255.0;
+	b = (float)ib/255.0;
+}
+
+
+
+
