@@ -2,6 +2,8 @@
 #define BOARD_H
 
 #include "Image.h"
+#include <SDL/SDL_mixer.h>
+
 
 #define BOARD_WIDTH		10
 #define BOARD_HEIGHT	10
@@ -83,6 +85,19 @@ public:
 	void 	findSpot(int spot[2]);
 	int 	curShipLen();
 	bool 	placeShip(int i, int j, short rotation);
+
+	bool loadSound();
+	
+	//music that will be played throughout the game
+	Mix_Music *backMusic;
+	Mix_Music *mainPageMusic;
+	Mix_Music *gameOver;	
+	
+	//The sound effects
+	Mix_Chunk *hitShip;
+	Mix_Chunk *sunkShip;
+	Mix_Chunk *missShip;
+
 
 };
 
