@@ -16,7 +16,7 @@ Board::Board()
   	 
   AIGuessLevel = UNINTELLIGENT_GUESS;
   reset();
-  load_sound();
+  loadSound();
 }
 
 
@@ -165,7 +165,7 @@ short Board::playerGuess(int guessX, int guessY)
 				if(++numShipsSunk == NUM_SHIPS)
 				{
 					//sound for being game over
-					Mix_PlayChannel(-1, gameOver, 0);
+					Mix_PlayMusic(gameOver, 2);
 
 					//TODO Some kind of game over state or somewhat
 					cout << "Player won with " << numGuesses << " guesses." << endl;
@@ -215,7 +215,7 @@ short Board::AIGuess()
 					{
 
 						//this part sound made for computer winning
-						Mix_PlayChannel(-1, gameOver, 0);
+						Mix_PlayMusic(gameOver, 2);
 						retVal = SHIP_WON;
 						cout << "Game Over." << endl << "Computer won with " << numGuesses << " guesses." << endl;
 				}

@@ -2,7 +2,7 @@
 #define BOARD_H
 
 #include "Image.h"
-#include "SDL_mixer.h"
+#include <SDL/SDL_mixer.h>
 
 
 #define BOARD_WIDTH		10
