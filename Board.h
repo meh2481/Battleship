@@ -89,14 +89,14 @@ public:
 	bool loadSound();
 	
 	//music that will be played throughout the game
-	Mix_Music *backMusic= NULL;
-	Mix_Music *mainPageMusic =NULL;
-	Mix_Music *gameOver =NULL;	
+	Mix_Music *backMusic;
+	Mix_Music *mainPageMusic;
+	Mix_Music *gameOver;	
 	
 	//The sound effects
-	Mix_Chunk *hitShip =NULL;
-	Mix_Chunk *sunkShip =NULL;
-	Mix_Chunk *missShip =NULL;
+	Mix_Chunk *hitShip;
+	Mix_Chunk *sunkShip;
+	Mix_Chunk *missShip;
 
 
 };
