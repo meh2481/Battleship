@@ -193,8 +193,10 @@ static void main_loop()
             	break;
             	
             case SDLK_n:
-            	gameBoards[0].reset();
-            	gameBoards[0].randShipPlacement();
+            	cState = STATE_PLAYER_PLACESHIPS;
+		      		gameBoards[0].reset();
+		      		gameBoards[1].reset();
+							cursorX = cursorY = 0;
             	break;
              
             default:
