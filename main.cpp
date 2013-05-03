@@ -17,11 +17,13 @@ Image* ship_edge;
 Image* ship_center;
 Image* bg;
 Image* gameover;
+Image* sunk;
 int cursorX=0, cursorY=0;
 Board gameBoards[2];
 bool bShowShips;
 char cState = STATE_PLAYER_PLACESHIPS;
 short g_rot;
+bool g_bSunk;
 
 //Set up SDL window
 static void setup_sdl() 
@@ -106,10 +108,20 @@ static void repaint()
   	ship_center->setColor(1.0,1.0,1.0);
   	ship_center->draw(cursorX / 64 * 64, cursorY / 64 * 64);
   	gameBoards[0].draw(bShowShips);
+  	if(g_bSunk)
+  	{
+  		g_bSunk = false;
+  		sunk->draw((WIDTH - sunk->getWidth()) / 2.0, (HEIGHT - sunk->getHeight()) / 2.0);
+  	}
   }
   else if(cState == STATE_AI_GUESS)
   {
   	gameBoards[1].draw(true);
+  	if(g_bSunk)
+  	{
+  		g_bSunk = false;
+  		sunk->draw((WIDTH - sunk->getWidth()) / 2.0, (HEIGHT - sunk->getHeight()) / 2.0);
+  	}
 	}
 	else if(cState == STATE_PLAYER_PLACESHIPS)
 	{
@@ -146,7 +158,7 @@ static void main_loop()
 	bool bDelay = false;
 	bool bAIGuessed = false;
 
-  while(true)
+  while(true)	//Loop forever
   {
   	if(bDelay)
   	{
@@ -163,6 +175,10 @@ static void main_loop()
   						cState = STATE_GAMEOVER;
   						break;
   					}
+  					else if(guessCode < NUM_SHIPS)
+  					{
+  						g_bSunk = true;
+						}
 						bDelay = true;
 					}
 					else
@@ -230,7 +246,11 @@ static void main_loop()
         			if(guessCode == SHIP_WON)
         				cState = STATE_GAMEOVER;
         			else if(guessCode != CANT_GUESS)
+        			{
         				bDelay = true;
+        				if(guessCode < NUM_SHIPS)
+        					g_bSunk = true;
+        			}
         		}
 					}
         	else if(cState == STATE_PLAYER_PLACESHIPS)
@@ -262,12 +282,6 @@ static void main_loop()
     
 		// update the screen  
     repaint();
-    
-   	//if(cState == STATE_AI_GUESS)
-    //{
-    	//Delay longer for AI guess so player can see where they're guessing
-    //	bDelay = true;
-		//}
 
     // Run at about 60 fps
     SDL_Delay(16);	//Wait 16ms until next loop, for ~60fps framerate
@@ -281,6 +295,7 @@ static void main_loop()
 int main(int argc, char** argv)
 {
 	bShowShips = false;
+	g_bSunk = false;
 	g_rot = DIR_DOWN;
 
 	//Seed the random number generator
@@ -295,6 +310,7 @@ int main(int argc, char** argv)
  	ship_center = new Image("res/ship_center.png");
  	bg = new Image("res/board.png");
  	gameover = new Image("res/gameover.png");
+ 	sunk = new Image("res/sunk.png");
  	gameBoards[0].setShipImages(ship_edge, ship_center);
  	gameBoards[1].setShipImages(ship_edge, ship_center);
     
