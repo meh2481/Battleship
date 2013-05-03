@@ -190,12 +190,18 @@ static void main_loop()
   					if(guessCode == SHIP_WON)
   					{
   						cState = STATE_GAMEOVER;
+  						Mix_PlayMusic(gameOver, 1);	//TODO AI won noise
   						break;
   					}
   					else if(guessCode < NUM_SHIPS)
   					{
   						g_bSunk = true;
+  						Mix_PlayChannel(-1, sunkShip, 0);	//Play sunk ship noise
 						}
+						else if(guessCode == SHIP_HIT)
+							Mix_PlayChannel(-1, hitShip, 0);	//Play hit ship noise
+						else if(guessCode == SHIP_MISS)
+        			Mix_PlayChannel(-1, missShip, 0);
 						bDelay = true;
 					}
 					else
@@ -261,12 +267,22 @@ static void main_loop()
         		{
         			short guessCode = gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT);
         			if(guessCode == SHIP_WON)
+        			{
         				cState = STATE_GAMEOVER;
+        				Mix_PlayMusic(gameOver, 1);	//TODO: Player won noise
+        			}
         			else if(guessCode != CANT_GUESS)
         			{
         				bDelay = true;
         				if(guessCode < NUM_SHIPS)
+        				{
         					g_bSunk = true;
+        					Mix_PlayChannel(-1, sunkShip, 0);	//Play sunk ship noise
+        				}
+        				else if(guessCode == SHIP_HIT)
+        					Mix_PlayChannel(-1, hitShip, 0);	//Play hit ship noise
+        				else if(guessCode == SHIP_MISS)
+        					Mix_PlayChannel(-1, missShip, 0);
         			}
         		}
 					}
@@ -304,7 +320,7 @@ static void main_loop()
     SDL_Delay(16);	//Wait 16ms until next loop, for ~60fps framerate
 		
 		if(bDelay)
-			SDL_Delay(500);
+			SDL_Delay(750);
   }
 }
 
@@ -345,7 +361,7 @@ int main(int argc, char** argv)
 	//Set up our viewport
   setup_sdl();
   loadSound();
-  Mix_PlayMusic(backMusic, 2);
+  //Mix_PlayMusic(mainPageMusic, -1);
   setup_opengl();
     
 	//Load textures
