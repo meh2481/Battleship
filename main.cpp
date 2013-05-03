@@ -29,7 +29,8 @@ bool loadSound();
 //music that will be played throughout the game
 Mix_Music *backMusic;
 Mix_Music *mainPageMusic;
-Mix_Music *gameOver;	
+Mix_Music *gameOver;
+Mix_Music *gameWon;
 
 //The sound effects
 Mix_Chunk *hitShip;
@@ -190,7 +191,7 @@ static void main_loop()
   					if(guessCode == SHIP_WON)
   					{
   						cState = STATE_GAMEOVER;
-  						Mix_PlayMusic(gameOver, 1);	//TODO AI won noise
+  						Mix_PlayMusic(gameOver, 0);	//AI won noise
   						break;
   					}
   					else if(guessCode < NUM_SHIPS)
@@ -236,6 +237,7 @@ static void main_loop()
 		      		gameBoards[0].reset();
 		      		gameBoards[1].reset();
 							cursorX = cursorY = 0;
+  						Mix_PlayMusic(backMusic, -1);	//Start playing calm music
             	break;
              
             default:
@@ -260,6 +262,7 @@ static void main_loop()
         		gameBoards[0].reset();
         		gameBoards[1].reset();
   					cursorX = cursorY = 0;
+  					Mix_PlayMusic(backMusic, -1);		//Start playing calm music
         	}
         	else if(cState == STATE_PLAYER_GUESS)
         	{
@@ -269,7 +272,7 @@ static void main_loop()
         			if(guessCode == SHIP_WON)
         			{
         				cState = STATE_GAMEOVER;
-        				Mix_PlayMusic(gameOver, 1);	//TODO: Player won noise
+        				Mix_PlayMusic(gameWon, 0);	//Player won noise
         			}
         			else if(guessCode != CANT_GUESS)
         			{
@@ -295,6 +298,7 @@ static void main_loop()
         			{
         				gameBoards[0].randShipPlacement();	//Place enemy ships
         				cState = STATE_PLAYER_GUESS;
+        				Mix_PlayMusic(mainPageMusic, -1);
         			}
         		}
         		else	//Right mouse button = rotate ship
@@ -331,6 +335,7 @@ bool loadSound()
 	backMusic =Mix_LoadMUS("res/beginningMusic.ogg" );
 	mainPageMusic =Mix_LoadMUS("res/mainTheme.ogg");
 	gameOver = Mix_LoadMUS("res/youLose.ogg");
+	gameWon = Mix_LoadMUS("res/youWin.ogg");
 	if((backMusic == NULL)||(mainPageMusic == NULL)||(gameOver == NULL))
 	{
 		cout << "No music " << SDL_GetError() << endl;
@@ -361,7 +366,7 @@ int main(int argc, char** argv)
 	//Set up our viewport
   setup_sdl();
   loadSound();
-  //Mix_PlayMusic(mainPageMusic, -1);
+  Mix_PlayMusic(backMusic, -1);	//Start playing calm music
   setup_opengl();
     
 	//Load textures

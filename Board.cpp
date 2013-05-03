@@ -137,30 +137,16 @@ short Board::playerGuess(int guessX, int guessY)
 	board[guessX][guessY].bGuessed = true;
 	if(board[guessX][guessY].bShip)
 	{
-
-		//this is the part where a sound is made for hitting the ship
-		//Mix_PlayChannel(-1,hitShip,0);
-
-		//TODO Some kind of cue for hitting ship
 		retVal = SHIP_HIT;
 		if(board[guessX][guessY].pShip != NULL)
 		{
 			if(++board[guessX][guessY].pShip->hits == board[guessX][guessY].pShip->len)
 			{
 
-				//this part sound made for sinking the ship
-				//Mix_PlayChannel(-1,sunkShip, 0);
-			
-				//TODO Some kind of cue for sinking ship
 				retVal = board[guessX][guessY].pShip->num;
-				cout << "Player sunk " << SHIP_NAMES[board[guessX][guessY].pShip->num] << endl;
 				if(++numShipsSunk == NUM_SHIPS)
 				{
-					//sound for being game over
-					//Mix_PlayMusic(gameOver, 2);
-
-					//TODO Some kind of game over state or somewhat
-					cout << "Player won with " << numGuesses << " guesses." << endl;
+					cout << "Game Over. Player won with " << numGuesses << " guesses." << endl;
 					retVal = SHIP_WON;
 				}	
 			}	
@@ -189,25 +175,15 @@ short Board::AIGuess()
 		
 		if(board[row][col].bShip)
 		{
-			//this is the part where a sound is made for hitting the ship
-			//Mix_PlayChannel(-1,hitShip,0);
-
 			retVal = SHIP_HIT;
 			if(board[row][col].pShip != NULL)
 			{
 				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
 				{
-					//this part sound made for sinking the ship
-					//Mix_PlayChannel(-1,sunkShip, 0);					
-
 					retVal = board[row][col].pShip->num;
-					cout << "Computer sunk " << SHIP_NAMES[board[row][col].pShip->num] << endl;
 					
 					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
 					{
-
-						//this part sound made for computer winning
-						//Mix_PlayMusic(gameOver, 2);
 						retVal = SHIP_WON;
 						cout << "Game Over." << endl << "Computer won with " << numGuesses << " guesses." << endl;
 				}
@@ -237,7 +213,6 @@ short Board::AIGuess()
 			{
 				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
 				{
-					cout << "Computer sunk " << SHIP_NAMES[board[row][col].pShip->num] << endl;
 					
 					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
 					{
