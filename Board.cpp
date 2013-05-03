@@ -267,7 +267,7 @@ void Board::findSpot(int spot[2])
 				}
 			}
 		}
-	}
+	}	
 }
 
 int Board::curShipLen()
