@@ -16,7 +16,6 @@ Board::Board()
   	 
   AIGuessLevel = UNINTELLIGENT_GUESS;
   reset();
-  loadSound();
 }
 
 
@@ -26,13 +25,6 @@ Board::~Board()
   	{
   		delete pShips[i];
 	}
-	Mix_FreeMusic(backMusic);
-	Mix_FreeMusic(mainPageMusic);	
-	Mix_FreeMusic(gameOver);
-
-	Mix_FreeChunk(hitShip);
-	Mix_FreeChunk(sunkShip);
-	Mix_FreeChunk(missShip);
 
 }
 
@@ -147,7 +139,7 @@ short Board::playerGuess(int guessX, int guessY)
 	{
 
 		//this is the part where a sound is made for hitting the ship
-		Mix_PlayChannel(-1,hitShip,0);
+		//Mix_PlayChannel(-1,hitShip,0);
 
 		//TODO Some kind of cue for hitting ship
 		retVal = SHIP_HIT;
@@ -157,7 +149,7 @@ short Board::playerGuess(int guessX, int guessY)
 			{
 
 				//this part sound made for sinking the ship
-				Mix_PlayChannel(-1,sunkShip, 0);
+				//Mix_PlayChannel(-1,sunkShip, 0);
 			
 				//TODO Some kind of cue for sinking ship
 				retVal = board[guessX][guessY].pShip->num;
@@ -165,7 +157,7 @@ short Board::playerGuess(int guessX, int guessY)
 				if(++numShipsSunk == NUM_SHIPS)
 				{
 					//sound for being game over
-					Mix_PlayMusic(gameOver, 2);
+					//Mix_PlayMusic(gameOver, 2);
 
 					//TODO Some kind of game over state or somewhat
 					cout << "Player won with " << numGuesses << " guesses." << endl;
@@ -198,7 +190,7 @@ short Board::AIGuess()
 		if(board[row][col].bShip)
 		{
 			//this is the part where a sound is made for hitting the ship
-			Mix_PlayChannel(-1,hitShip,0);
+			//Mix_PlayChannel(-1,hitShip,0);
 
 			retVal = SHIP_HIT;
 			if(board[row][col].pShip != NULL)
@@ -206,7 +198,7 @@ short Board::AIGuess()
 				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
 				{
 					//this part sound made for sinking the ship
-					Mix_PlayChannel(-1,sunkShip, 0);					
+					//Mix_PlayChannel(-1,sunkShip, 0);					
 
 					retVal = board[row][col].pShip->num;
 					cout << "Computer sunk " << SHIP_NAMES[board[row][col].pShip->num] << endl;
@@ -215,7 +207,7 @@ short Board::AIGuess()
 					{
 
 						//this part sound made for computer winning
-						Mix_PlayMusic(gameOver, 2);
+						//Mix_PlayMusic(gameOver, 2);
 						retVal = SHIP_WON;
 						cout << "Game Over." << endl << "Computer won with " << numGuesses << " guesses." << endl;
 				}
@@ -345,24 +337,4 @@ void Board::drawShips()	//Separate from above because of ship placement
 			}
 		}
 	}
-}
-//loading the sounds to be played throughout the game
-bool Board::loadSound()
-{
-	backMusic =Mix_LoadMUS("  PUTMUSICFILE " );
-	mainPageMusic =Mix_LoadMUS("  PUTMUSICFILE " );
-	gameOver = Mix_LoadMUS(" PUTMUSICFILE ");
-	if((backMusic == NULL)||(mainPageMusic == NULL)||(gameOver == NULL))
-	{
-		return false;
-	}
-	hitShip =Mix_LoadWAV("  PUTMUSICFILE " );
-	sunkShip =Mix_LoadWAV("  PUTMUSICFILE " );
-	missShip =Mix_LoadWAV("  PUTMUSICFILE " );
-	if(( hitShip ==NULL)||( sunkShip==NULL)||(missShip ==NULL))
-	{
-		return false;
-	}
-	return true;
-
 }

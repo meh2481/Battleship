@@ -86,17 +86,6 @@ public:
 	int 	curShipLen();
 	bool 	placeShip(int i, int j, short rotation);
 
-	bool loadSound();
-	
-	//music that will be played throughout the game
-	Mix_Music *backMusic;
-	Mix_Music *mainPageMusic;
-	Mix_Music *gameOver;	
-	
-	//The sound effects
-	Mix_Chunk *hitShip;
-	Mix_Chunk *sunkShip;
-	Mix_Chunk *missShip;
 
 
 };

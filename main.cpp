@@ -24,17 +24,34 @@ bool bShowShips;
 char cState = STATE_PLAYER_PLACESHIPS;
 short g_rot;
 bool g_bSunk;
+bool loadSound();
+
+//music that will be played throughout the game
+Mix_Music *backMusic;
+Mix_Music *mainPageMusic;
+Mix_Music *gameOver;	
+
+//The sound effects
+Mix_Chunk *hitShip;
+Mix_Chunk *sunkShip;
+Mix_Chunk *missShip;
 
 //Set up SDL window
 static void setup_sdl() 
 {
 	const SDL_VideoInfo* video;
 
-  if(SDL_Init(SDL_INIT_VIDEO) < 0) 
+  if(SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) < 0) 
   {
   	fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
     exit(1);
   }
+  
+  if(Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1)
+	{
+		cout << "Unable to open audio device. Mix_GetError: " << Mix_GetError() << endl;
+	  exit(1);
+	}
         
   // Quit SDL properly on exit 
   atexit(SDL_Quit);
@@ -291,6 +308,30 @@ static void main_loop()
   }
 }
 
+
+//loading the sounds to be played throughout the game
+bool loadSound()
+{
+	backMusic =Mix_LoadMUS("res/beginningMusic.ogg" );
+	mainPageMusic =Mix_LoadMUS("res/mainTheme.ogg");
+	gameOver = Mix_LoadMUS("res/youLose.ogg");
+	if((backMusic == NULL)||(mainPageMusic == NULL)||(gameOver == NULL))
+	{
+		cout << "No music " << SDL_GetError() << endl;
+		return false;
+	}
+	hitShip =Mix_LoadWAV("res/hit.ogg" );
+	sunkShip =Mix_LoadWAV("res/sunk.ogg" );
+	missShip =Mix_LoadWAV("res/miss.ogg" );
+	if(( hitShip ==NULL)||( sunkShip==NULL)||(missShip ==NULL))
+	{
+		cout << "No hit noises " << SDL_GetError() << endl;
+		return false;
+	}
+	return true;
+
+}
+
 //Our main program
 int main(int argc, char** argv)
 {
@@ -303,6 +344,8 @@ int main(int argc, char** argv)
 
 	//Set up our viewport
   setup_sdl();
+  loadSound();
+  Mix_PlayMusic(backMusic, 2);
   setup_opengl();
     
 	//Load textures
@@ -316,6 +359,15 @@ int main(int argc, char** argv)
     
   //Start the main loop
   main_loop();
+  
+  
+	Mix_FreeMusic(backMusic);
+	Mix_FreeMusic(mainPageMusic);	
+	Mix_FreeMusic(gameOver);
+
+	Mix_FreeChunk(hitShip);
+	Mix_FreeChunk(sunkShip);
+	Mix_FreeChunk(missShip);
         
   return 0;
 }
