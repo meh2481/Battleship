@@ -169,7 +169,7 @@ short Board::AIGuess()
 		while(board[row][col].bGuessed);	//While loop here so AI doesn't "give up" if it guesses the same spot twice
 		
 		numGuesses++;	//AI has # guesses count too
-
+		AIGuessDir = NO_DIR;
 		board[row][col].bGuessed = true;
 		
 		if(board[row][col].bShip)
@@ -250,28 +250,57 @@ void Board::findSpot(int spot[2])
 		}
 		while(board[spot[0]][spot[1]].bGuessed);
 	}
-	else if(board[AILastGuessX-1][AILastGuessY].bGuessed == false && AILastGuessX-1 != -1)
+	else if(AILastGuessX-1 >= 0 && AIGuessDir == DIR_LEFT && board[AILastGuessX-1][AILastGuessY].bGuessed == false)
 	{
 		spot[0] = AILastGuessX-1;
 		spot[1] = AILastGuessY;
 	}
-	else if(board[AILastGuessX][AILastGuessY-1].bGuessed == false && AILastGuessY-1 != -1)
+	else if(AILastGuessY-1 >= 0 && AIGuessDir == DIR_UP && board[AILastGuessX][AILastGuessY-1].bGuessed == false)
 	{
 		spot[0] = AILastGuessX;
 		spot[1] = AILastGuessY-1;
 	}
-	else if(board[AILastGuessX+1][AILastGuessY].bGuessed == false && AILastGuessX+1 != 10)
+	else if(AILastGuessX+1 < BOARD_WIDTH && AIGuessDir == DIR_RIGHT && board[AILastGuessX+1][AILastGuessY].bGuessed == false)
 	{
 		spot[0] =AILastGuessX+1;
 		spot[1] = AILastGuessY;
 	}
-	else if(board[AILastGuessX][AILastGuessY+1].bGuessed == false && AILastGuessY+1 != 10)
+	else if(AILastGuessY+1 < BOARD_HEIGHT && AIGuessDir == DIR_DOWN && board[AILastGuessX][AILastGuessY+1].bGuessed == false)
 	{
 		spot[0] = AILastGuessX;
 		spot[1] = AILastGuessY+1;
 	}
+	else if(AILastGuessX-1 >= 0 && board[AILastGuessX-1][AILastGuessY].bGuessed == false)	//Guess left
+	{
+		spot[0] = AILastGuessX-1;
+		spot[1] = AILastGuessY;
+		if(board[AILastGuessX-1][AILastGuessY].bShip)	//Continue guessing this way if correct
+			AIGuessDir = DIR_LEFT;
+	}
+	else if(AILastGuessY-1 >= 0 && board[AILastGuessX][AILastGuessY-1].bGuessed == false)	//Guess up
+	{
+		spot[0] = AILastGuessX;
+		spot[1] = AILastGuessY-1;
+		if(board[AILastGuessX][AILastGuessY-1].bShip)
+			AIGuessDir = DIR_UP;
+	}
+	else if(AILastGuessX+1 < BOARD_WIDTH && board[AILastGuessX+1][AILastGuessY].bGuessed == false)	//Guess right
+	{
+		spot[0] =AILastGuessX+1;
+		spot[1] = AILastGuessY;
+		if(board[AILastGuessX+1][AILastGuessY].bShip)
+			AIGuessDir = DIR_RIGHT;
+	}
+	else if(AILastGuessY+1 < BOARD_HEIGHT && board[AILastGuessX][AILastGuessY+1].bGuessed == false)	//Guess down
+	{
+		spot[0] = AILastGuessX;
+		spot[1] = AILastGuessY+1;
+		if(board[AILastGuessX][AILastGuessY+1].bShip)
+			AIGuessDir = DIR_DOWN;
+	}
 	else
 	{
+		AIGuessDir = NO_DIR;
 		do
 		{
 		spot[0] = rand() % BOARD_WIDTH;
@@ -279,7 +308,7 @@ void Board::findSpot(int spot[2])
 		}
 		while(board[spot[0]][spot[1]].bGuessed);
 
-		//AIGuessLevel = UNINTELLIGENT_GUESS;
+		AIGuessLevel = UNINTELLIGENT_GUESS;
 		//AIGuess();
 	}
 }
