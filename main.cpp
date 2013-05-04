@@ -24,6 +24,7 @@ bool bShowShips;
 char cState = STATE_PLAYER_PLACESHIPS;
 short g_rot;
 bool g_bSunk;
+bool bGuessedThisRound;
 bool loadSound();
 
 //music that will be played throughout the game
@@ -206,7 +207,10 @@ static void main_loop()
 						bDelay = true;
 					}
 					else
+					{
 						cState = STATE_PLAYER_GUESS;
+						bGuessedThisRound = false;
+					}
 					break;
 				case STATE_PLAYER_GUESS:
 					cState = STATE_AI_GUESS;
@@ -266,7 +270,7 @@ static void main_loop()
         	}
         	else if(cState == STATE_PLAYER_GUESS)
         	{
-        		if(event.button.button == SDL_BUTTON_LEFT)
+        		if(event.button.button == SDL_BUTTON_LEFT && !bGuessedThisRound)
         		{
         			short guessCode = gameBoards[0].playerGuess(event.button.x / TILE_WIDTH, event.button.y / TILE_HEIGHT);
         			if(guessCode == SHIP_WON)
@@ -276,6 +280,7 @@ static void main_loop()
         			}
         			else if(guessCode != CANT_GUESS)
         			{
+        				bGuessedThisRound = true;
         				bDelay = true;
         				if(guessCode < NUM_SHIPS)
         				{
@@ -298,6 +303,7 @@ static void main_loop()
         			{
         				gameBoards[0].randShipPlacement();	//Place enemy ships
         				cState = STATE_PLAYER_GUESS;
+        				bGuessedThisRound = false;
         				Mix_PlayMusic(mainPageMusic, -1);
         			}
         		}
@@ -359,6 +365,7 @@ int main(int argc, char** argv)
 	bShowShips = false;
 	g_bSunk = false;
 	g_rot = DIR_DOWN;
+	bGuessedThisRound = false;
 
 	//Seed the random number generator
 	srand(time(NULL));
