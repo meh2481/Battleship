@@ -12,11 +12,11 @@ libglu1-mesa-dev
 libsdl-mixer1.2
 libsdl-mixer1.2-dev
 
-To run the game:
+To compile and run the game:
 make
 ./battleship
 
 In the game, you will start by placing your pieces on the board.
 Use left click to place and right click to change the piece from horizontal to vertical and vertical to horizontal.
-A game of life and death with the AI will then insue!
-You can use the p key to cheat and see the AI's ship placement.
+A game of life and death with the AI will then ensue!
+You can use the p key to cheat and see the AI's ship placement, and the n key to start a new game.

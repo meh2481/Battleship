@@ -141,6 +141,7 @@ short Board::playerGuess(int guessX, int guessY)
 		{
 			if(++board[guessX][guessY].pShip->hits == board[guessX][guessY].pShip->len)
 			{
+				cout << "Player sunk " << SHIP_NAMES[board[guessX][guessY].pShip->num] << endl;
 
 				retVal = board[guessX][guessY].pShip->num;
 				if(++numShipsSunk == NUM_SHIPS)
@@ -184,6 +185,7 @@ short Board::AIGuess()
 				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
 				{
 					retVal = board[row][col].pShip->num;
+					cout << "Computer sunk " << SHIP_NAMES[board[row][col].pShip->num] << endl;
 					
 					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
 					{
