@@ -13,8 +13,6 @@ Board::Board()
   	pShips[i]->len = SHIP_SIZES[i];
   	pShips[i]->num = i;
   }
-  	 
-  AIGuessLevel = UNINTELLIGENT_GUESS;
   reset();
 }
 
@@ -42,6 +40,7 @@ void Board::reset()
 	for(int i = 0; i < NUM_SHIPS; i++)
 		pShips[i]->hits = 0;
 	AILastGuessX = AILastGuessY = AIGuessDir = NO_DIR;
+	AIGuessLevel = UNINTELLIGENT_GUESS;
 	numShipsSunk = 0;
 	numGuesses = 0;
 	curShipPlace = 0;
@@ -208,9 +207,8 @@ short Board::AIGuess()
 	
 		numGuesses++;
 		
-		int row, col;
-		row = spot[0];
-		col = spot[1];
+		int row = spot[0];
+		int col = spot[1];
 
 		board[row][col].bGuessed = true;
 
@@ -223,9 +221,10 @@ short Board::AIGuess()
 			retVal = SHIP_HIT;
 			if(board[row][col].pShip != NULL)
 			{
-				if(++board[row][col].pShip->hits == board[row][col].pShip->len)
+				if(++board[row][col].pShip->hits == board[row][col].pShip->len)	//Sunk a ship
 				{
 					AIGuessLevel = UNINTELLIGENT_GUESS;
+					AILastGuessX = AILastGuessY = NO_DIR;
 					retVal = board[row][col].pShip->num;
 					cout << "Computer sunk " << SHIP_NAMES[board[row][col].pShip->num] << endl;
 					if(++numShipsSunk == NUM_SHIPS)	//AI has same # of ships as player
@@ -242,7 +241,16 @@ short Board::AIGuess()
 
 void Board::findSpot(int spot[2])
 {
-	if(board[AILastGuessX-1][AILastGuessY].bGuessed == false && AILastGuessX-1 != -1)
+	if(AILastGuessX == NO_DIR || AILastGuessY == NO_DIR)
+	{
+		do
+		{
+		spot[0] = rand() % BOARD_WIDTH;
+		spot[1] = rand() % BOARD_HEIGHT;
+		}
+		while(board[spot[0]][spot[1]].bGuessed);
+	}
+	else if(board[AILastGuessX-1][AILastGuessY].bGuessed == false && AILastGuessX-1 != -1)
 	{
 		spot[0] = AILastGuessX-1;
 		spot[1] = AILastGuessY;
@@ -271,8 +279,8 @@ void Board::findSpot(int spot[2])
 		}
 		while(board[spot[0]][spot[1]].bGuessed);
 
-		AIGuessLevel = UNINTELLIGENT_GUESS;
-		AIGuess();
+		//AIGuessLevel = UNINTELLIGENT_GUESS;
+		//AIGuess();
 	}
 }
 
