@@ -3,7 +3,7 @@ README
 Welcome to the game Battleship in GUI presented by Mark, Benny, Yong, and Daniel.
 Some special features of this game include smart AI as well as sound effects.
 
-To install the packages that are needed, use sudo apt-get install
+To install the packages that are needed, use "sudo apt-get install". 
 The packages that are needed are:
 ```
 libsdl1.2-dev
