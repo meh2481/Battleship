@@ -75,8 +75,8 @@ public:
 	short playerGuess(int guessX, int guessY);
 	short AIGuess();
 	
-	void draw(bool bDrawShips = false);
-	void drawShips();
+	void draw(bool bDrawShips = false, float fOffset = 0.0);
+	void drawShips(float fOffset = 0.0);
 	
 	void 	setAIGuessLevel(short level)	{AIGuessLevel = level;};
 	short getAIGuessLevel()						{return AIGuessLevel;};

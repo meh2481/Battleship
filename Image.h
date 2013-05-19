@@ -37,7 +37,7 @@ public:
 	~Image();
 
 	void load(string sFilename);
-	void draw(int x, int y);
+	void draw(int x, int y, float fOffset = 0.0);
 
 	int getWidth() 					{return texW;};
 	int getHeight() 				{return texH;};

@@ -322,7 +322,7 @@ int Board::curShipLen()
 	return -1;
 }
 	
-void Board::draw(bool bDrawShips)
+void Board::draw(bool bDrawShips, float fOffset)
 {
 	//Loop through the board
 	for(int i = 0; i < BOARD_WIDTH; i++)
@@ -332,7 +332,7 @@ void Board::draw(bool bDrawShips)
 			if(board[i][j].bShip && (bDrawShips || board[i][j].bGuessed))	//If we're supposed to draw ship outlines, or if they've guessed there
 			{
 				imgShipEdge->setColor(0.0,0.0,0.0);
-				imgShipEdge->draw(i * TILE_WIDTH, j * TILE_HEIGHT);
+				imgShipEdge->draw(i * TILE_WIDTH, j * TILE_HEIGHT, fOffset);
 			}
 			if(board[i][j].bGuessed)						//And draw the guesses
 			{
@@ -340,13 +340,13 @@ void Board::draw(bool bDrawShips)
 					imgShipCenter->setColor(1.0,0.0,0.0);
 				else
 					imgShipCenter->setColor(1.0,1.0,1.0);
-				imgShipCenter->draw(i * TILE_WIDTH, j * TILE_HEIGHT);
+				imgShipCenter->draw(i * TILE_WIDTH, j * TILE_HEIGHT, fOffset);
 			}
 		}
 	}
 }
 
-void Board::drawShips()	//Separate from above because of ship placement
+void Board::drawShips(float fOffset)	//Separate from above because of ship placement
 {
 	for(int i = 0; i < BOARD_WIDTH; i++)
 	{
@@ -355,7 +355,7 @@ void Board::drawShips()	//Separate from above because of ship placement
 			if(board[i][j].bShip)
 			{
 				imgShipEdge->setColor(0.0,0.0,0.0);
-				imgShipEdge->draw(i * TILE_WIDTH, j * TILE_HEIGHT);
+				imgShipEdge->draw(i * TILE_WIDTH, j * TILE_HEIGHT, fOffset);
 			}
 		}
 	}

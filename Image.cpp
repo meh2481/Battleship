@@ -67,7 +67,7 @@ void Image::load(string sFilename)
 
 }
 
-void Image::draw(int x, int y)
+void Image::draw(int x, int y, float fOffset)
 {
 	if(texture == 0)
 		return;
@@ -85,19 +85,19 @@ void Image::draw(int x, int y)
 	glColor3f(m_col.r,m_col.g,m_col.b);	//Colorize according to how we've colorized this image
   // top left
   glTexCoord2i(0, 0);
-  glVertex3f(2.0*(GLfloat)x/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)y/(GLfloat)HEIGHT + 1.0, 0);
+  glVertex3f(2.0*(GLfloat)x/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)y/(GLfloat)HEIGHT + 1.0, fOffset);
   //glVertex3f( -1.0f,  1.0f,  0.0f );
   // top right
   glTexCoord2i(1, 0);
-  glVertex3f(2.0*(GLfloat)(x+texW)/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)y/(GLfloat)HEIGHT+1.0, 0);
+  glVertex3f(2.0*(GLfloat)(x+texW)/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)y/(GLfloat)HEIGHT+1.0, fOffset);
   //glVertex3f( 1.0f,  1.0f,  0.0f );
   // bottom right
   glTexCoord2i(1, 1);
-  glVertex3f(2.0*(GLfloat)(x+texW)/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)(y+texH)/(GLfloat)HEIGHT+1.0, 0);
+  glVertex3f(2.0*(GLfloat)(x+texW)/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)(y+texH)/(GLfloat)HEIGHT+1.0, fOffset);
   //glVertex3f( 1.0f,  -1.0f,  0.0f );
   // bottom left
   glTexCoord2i(0, 1);
-  glVertex3f(2.0*(GLfloat)x/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)(y+texH)/(GLfloat)HEIGHT+1.0, 0);
+  glVertex3f(2.0*(GLfloat)x/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)(y+texH)/(GLfloat)HEIGHT+1.0, fOffset);
   //glVertex3f( -1.0f,  -1.0f,  0.0f );
   
   glEnd();

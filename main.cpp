@@ -130,21 +130,23 @@ static void setup_opengl()
 //Repaint our window
 static void repaint()
 {
+	float fOffset = 0.0;
 	if(bTrippy)
 	{
 		rquad += 0.5;
 		if(fZoom > -3.1)
 			fZoom -= 0.05;
+		fOffset = 0.05;
 	}
 	// Clear the color plane and the z-buffer 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-  bg->draw(0,0);
+  bg->draw(0,0,0);
   if(cState == STATE_PLAYER_GUESS)
   {
   	ship_center->setColor(1.0,1.0,1.0);
-  	ship_center->draw(cursorX / 64 * 64, cursorY / 64 * 64);
-  	gameBoards[0].draw(bShowShips);
+  	ship_center->draw(cursorX / 64 * 64, cursorY / 64 * 64, fOffset);
+  	gameBoards[0].draw(bShowShips, fOffset);
   	if(g_bSunk)
   	{
   		g_bSunk = false;
@@ -153,7 +155,7 @@ static void repaint()
   }
   else if(cState == STATE_AI_GUESS)
   {
-  	gameBoards[1].draw(true);
+  	gameBoards[1].draw(true, fOffset);
   	if(g_bSunk)
   	{
   		g_bSunk = false;
@@ -162,7 +164,7 @@ static void repaint()
 	}
 	else if(cState == STATE_PLAYER_PLACESHIPS)
 	{
-		gameBoards[1].drawShips();
+		gameBoards[1].drawShips(fOffset);
 		int iLen = gameBoards[1].curShipLen();
 		if(iLen != -1)
 		{
