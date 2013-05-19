@@ -1,6 +1,11 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
+#define WIDTH  640
+#define HEIGHT 640
+
+#define MAGIC_ZOOM_NUMBER -2.415f
+
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
 #include <SDL/SDL_image.h>

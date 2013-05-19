@@ -1,5 +1,5 @@
 #include "Image.h"
-
+extern float rquad,fZoom;
 Image::Image()
 {
 	texture = texW = texH = 0;
@@ -71,7 +71,11 @@ void Image::draw(int x, int y)
 {
 	if(texture == 0)
 		return;
-	
+		
+	//y = -y;
+	glLoadIdentity( );
+    glTranslatef( 0.0f, 0.0f, fZoom);
+    glRotatef( rquad, 1.0f, 1.0f, 1.0f );
 	// tell opengl to use the generated texture
   glBindTexture(GL_TEXTURE_2D, texture);
   glEnable(GL_TEXTURE_2D);
@@ -81,23 +85,34 @@ void Image::draw(int x, int y)
 	glColor3f(m_col.r,m_col.g,m_col.b);	//Colorize according to how we've colorized this image
   // top left
   glTexCoord2i(0, 0);
-  glVertex3f(x, y, 0);
-
+  glVertex3f(2.0*(GLfloat)x/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)y/(GLfloat)HEIGHT + 1.0, 0);
+  //glVertex3f( -1.0f,  1.0f,  0.0f );
   // top right
   glTexCoord2i(1, 0);
-  glVertex3f(x+texW, y, 0);
-
+  glVertex3f(2.0*(GLfloat)(x+texW)/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)y/(GLfloat)HEIGHT+1.0, 0);
+  //glVertex3f( 1.0f,  1.0f,  0.0f );
   // bottom right
   glTexCoord2i(1, 1);
-  glVertex3f(x+texW, y+texH, 0);
-
+  glVertex3f(2.0*(GLfloat)(x+texW)/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)(y+texH)/(GLfloat)HEIGHT+1.0, 0);
+  //glVertex3f( 1.0f,  -1.0f,  0.0f );
   // bottom left
   glTexCoord2i(0, 1);
-  glVertex3f(x, y+texH, 0);
-
+  glVertex3f(2.0*(GLfloat)x/(GLfloat)WIDTH-1.0, -2.0*(GLfloat)(y+texH)/(GLfloat)HEIGHT+1.0, 0);
+  //glVertex3f( -1.0f,  -1.0f,  0.0f );
+  
   glEnd();
-        
   glDisable(GL_TEXTURE_2D);
+  
+  
+  /*glColor3f( 0.5f, 0.5f, 1.0f);
+
+    glBegin( GL_QUADS );                 // Draw A Quad              
+      glVertex3f(  1.0f,  1.0f,  0.0f ); // Top Right Of The Quad    
+      glVertex3f( -1.0f,  1.0f,  0.0f ); // Top Left Of The Quad     
+      glVertex3f( -1.0f, -1.0f,  0.0f ); // Bottom Left Of The Quad  
+      glVertex3f(  1.0f, -1.0f,  0.0f ); // Bottom Right Of The Quad 
+    glEnd( );*/
+        glLoadIdentity();
 }
 
 Color::Color()

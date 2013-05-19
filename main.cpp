@@ -4,14 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define WIDTH  640
-#define HEIGHT 640
 
 #define STATE_PLAYER_PLACESHIPS		0
 #define STATE_PLAYER2_PLACESHIPS	1
 #define STATE_PLAYER_GUESS				2
 #define STATE_AI_GUESS						3
 #define STATE_GAMEOVER						4
+
+//For maximum wtf
+#define TRIPPY
 
 Image* ship_edge;
 Image* ship_center;
@@ -26,12 +27,16 @@ short g_rot;
 bool g_bSunk;
 bool bGuessedThisRound;
 bool loadSound();
+float rquad;
+bool bTrippy;
+float fZoom;
 
 //music that will be played throughout the game
 Mix_Music *backMusic;
 Mix_Music *mainPageMusic;
 Mix_Music *gameOver;
 Mix_Music *gameWon;
+Mix_Music *trippy;
 
 //The sound effects
 Mix_Chunk *hitShip;
@@ -99,7 +104,8 @@ static void setup_opengl()
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
     
-  glOrtho(0, WIDTH, HEIGHT, 0, 1, -1);
+  gluPerspective( 45.0f, (GLfloat)WIDTH/(GLfloat)HEIGHT, 0.1f, 100.0f );
+  //glOrtho(0, WIDTH, HEIGHT, 0, 1, -1);
     
   glMatrixMode(GL_MODELVIEW);
 
@@ -112,12 +118,24 @@ static void setup_opengl()
   //Enable image transparency
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  
+  glShadeModel( GL_SMOOTH );
+  glClearDepth( 1.0f );
+  glEnable( GL_DEPTH_TEST );
+  glDepthFunc( GL_LEQUAL );
+  glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 }
 
 
 //Repaint our window
 static void repaint()
-{   
+{
+	if(bTrippy)
+	{
+		rquad += 0.5;
+		if(fZoom > -3.1)
+			fZoom -= 0.05;
+	}
 	// Clear the color plane and the z-buffer 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -176,9 +194,19 @@ static void main_loop()
 	SDL_Event event;
 	bool bDelay = false;
 	bool bAIGuessed = false;
+	int hang = 0;
 
   while(true)	//Loop forever
   {
+  	if(hang)
+  	{
+  	  hang -= 16;
+  	  if(hang < 0)
+  	    hang = 0;
+  		repaint();
+  		SDL_Delay(16);
+  		continue;
+  	}
   	if(bDelay)
   	{
   		bDelay = false;
@@ -238,6 +266,9 @@ static void main_loop()
             	
             case SDLK_n:
             	cState = STATE_PLAYER_PLACESHIPS;
+		      		rquad = 0.0;
+							fZoom = MAGIC_ZOOM_NUMBER;
+							bTrippy = false;
 		      		gameBoards[0].reset();
 		      		gameBoards[1].reset();
 							cursorX = cursorY = 0;
@@ -263,6 +294,9 @@ static void main_loop()
         	if(cState == STATE_GAMEOVER)
         	{
         		cState = STATE_PLAYER_PLACESHIPS;
+        		rquad = 0.0;
+						fZoom = MAGIC_ZOOM_NUMBER;
+						bTrippy = false;
         		gameBoards[0].reset();
         		gameBoards[1].reset();
   					cursorX = cursorY = 0;
@@ -288,7 +322,18 @@ static void main_loop()
         					Mix_PlayChannel(-1, sunkShip, 0);	//Play sunk ship noise
         				}
         				else if(guessCode == SHIP_HIT)
+        				{
         					Mix_PlayChannel(-1, hitShip, 0);	//Play hit ship noise
+#ifdef TRIPPY
+        					if(!bTrippy)
+        					{
+        					  repaint();
+        						bTrippy = true;
+        						SDL_Delay(1200);
+        						Mix_PlayMusic(trippy, -1);
+        					}
+#endif
+        				}
         				else if(guessCode == SHIP_MISS)
         					Mix_PlayChannel(-1, missShip, 0);
         			}
@@ -330,7 +375,7 @@ static void main_loop()
     SDL_Delay(16);	//Wait 16ms until next loop, for ~60fps framerate
 		
 		if(bDelay)
-			SDL_Delay(750);
+			hang = 750;
   }
 }
 
@@ -342,6 +387,7 @@ bool loadSound()
 	mainPageMusic =Mix_LoadMUS("res/mainTheme.ogg");
 	gameOver = Mix_LoadMUS("res/youLose.ogg");
 	gameWon = Mix_LoadMUS("res/youWin.ogg");
+	trippy = Mix_LoadMUS("res/trippy.ogg");
 	if((backMusic == NULL)||(mainPageMusic == NULL)||(gameOver == NULL))
 	{
 		cout << "No music " << SDL_GetError() << endl;
@@ -366,6 +412,9 @@ int main(int argc, char** argv)
 	g_bSunk = false;
 	g_rot = DIR_DOWN;
 	bGuessedThisRound = false;
+	rquad = 0.0;
+	fZoom = MAGIC_ZOOM_NUMBER;
+	bTrippy = false;
 
 	//Seed the random number generator
 	srand(time(NULL));
@@ -392,6 +441,7 @@ int main(int argc, char** argv)
 	Mix_FreeMusic(backMusic);
 	Mix_FreeMusic(mainPageMusic);	
 	Mix_FreeMusic(gameOver);
+	Mix_FreeMusic(trippy);
 
 	Mix_FreeChunk(hitShip);
 	Mix_FreeChunk(sunkShip);
