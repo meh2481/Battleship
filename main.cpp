@@ -152,14 +152,24 @@ static void repaint()
   		g_bSunk = false;
   		sunk->draw((WIDTH - sunk->getWidth()) / 2.0, (HEIGHT - sunk->getHeight()) / 2.0);
   	}
+  	if(bTrippy)
+  	{
+  		gameBoards[1].draw(true, -fOffset);
+  	}
   }
   else if(cState == STATE_AI_GUESS)
   {
-  	gameBoards[1].draw(true, fOffset);
+  	gameBoards[1].draw(true, -fOffset);
   	if(g_bSunk)
   	{
   		g_bSunk = false;
   		sunk->draw((WIDTH - sunk->getWidth()) / 2.0, (HEIGHT - sunk->getHeight()) / 2.0);
+  	}
+  	if(bTrippy)
+  	{
+  		ship_center->setColor(1.0,1.0,1.0);
+			ship_center->draw(cursorX / 64 * 64, cursorY / 64 * 64, fOffset);
+			gameBoards[0].draw(bShowShips, fOffset);
   	}
 	}
 	else if(cState == STATE_PLAYER_PLACESHIPS)
@@ -377,7 +387,7 @@ static void main_loop()
     SDL_Delay(16);	//Wait 16ms until next loop, for ~60fps framerate
 		
 		if(bDelay)
-			hang = 750;
+			hang = 900;
   }
 }
 
