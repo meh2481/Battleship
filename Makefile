@@ -1,7 +1,7 @@
 #Slightly altered version of in-class example
 
 objects := main.o Image.o Board.o
-libs := -lSDL -lSDLmain -lSDL_image -lGL -lGLU -lSDL_mixer
+libs := -lSDL -lSDL_image -lGL -lGLU -lSDL_mixer
 
 all: battleship
 
