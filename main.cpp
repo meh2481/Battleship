@@ -193,7 +193,7 @@ static void repaint()
 	else if(cState == STATE_GAMEOVER)
 	{
 		//Center "Game Over" text on the screen
-		gameover->draw((WIDTH - gameover->getWidth()) / 2.0, (HEIGHT - gameover->getHeight()) / 2.0);
+		gameover->draw((WIDTH - gameover->getWidth()) / 2.0, (HEIGHT - gameover->getHeight()) / 2.0, fOffset);
 	}
 
   // swap the back and front buffers 
@@ -387,7 +387,7 @@ static void main_loop()
     SDL_Delay(16);	//Wait 16ms until next loop, for ~60fps framerate
 		
 		if(bDelay)
-			hang = 900;
+			hang = 750;
   }
 }
 
