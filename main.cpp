@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 
 #define STATE_PLAYER_PLACESHIPS		0
@@ -418,7 +419,11 @@ bool loadSound()
 }
 
 //Our main program
+#ifdef _WIN32
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else
 int main(int argc, char** argv)
+#endif
 {
 	bShowShips = false;
 	g_bSunk = false;
